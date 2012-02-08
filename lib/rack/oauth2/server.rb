@@ -293,7 +293,7 @@ module Rack
             # handle the rest.
             auth_request = AuthRequest.create(client, requested_scope, redirect_uri.to_s, response_type, state)
             uri = URI.parse(request.url)
-            uri.query = Utils.hash_to_query request.GET.merge(:authorization => auth_request.id.to_s)
+            uri.query = Rack::Utils.build_query request.GET.merge(:authorization => auth_request.id.to_s)
             return redirect_to(uri, 303)
           end
         rescue OAuthError=>error
