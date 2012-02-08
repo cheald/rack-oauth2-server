@@ -296,9 +296,12 @@ module Rack
             uri.query = Rack::Utils.build_query request.GET.merge(:authorization => auth_request.id.to_s)
             return redirect_to(uri, 303)
           end
-        rescue OAuthError=>error
+        rescue RedirectUriMismatchError => error
           logger.error "RO2S: Authorization request error #{error.code}: #{error.message}" if logger
-          params = { :error=>error.code, :error_description=>error.message, :state=>state }
+          return bad_request("Error: %s" % error.message)
+        rescue OAuthError => error
+          logger.error "RO2S: Authorization request error #{error.code}: #{error.message}" if logger
+          params = { :error => error.code, :error_description => error.message, :state => state }
           if response_type == "token"
             redirect_uri.fragment = Rack::Utils.build_query(params)
           else # response type is code, or invalid
