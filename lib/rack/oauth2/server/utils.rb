@@ -1,7 +1,6 @@
 module Rack
   module OAuth2
     class Server
-
       module Utils
         module_function
 
@@ -22,8 +21,10 @@ module Rack
           (Array === scope ? scope.join(" ") : scope || "").split(/\s+/).compact.uniq.sort
         end
 
+        def hash_to_query(hsh)
+          hsh.map {|k,v| "%s=%s" % [Rack::Utils.escape(k), Rack::Utils.escape(v)] }.join("&")
+        end
       end
-
     end
   end
 end
