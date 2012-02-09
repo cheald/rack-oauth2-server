@@ -206,8 +206,8 @@ module Rack
             raise InvalidTokenError if access_token.nil? || access_token.revoked
             raise ExpiredTokenError if access_token.expires_at && access_token.expires_at <= Time.now.to_i
             request.env["oauth.access_token"] = token
-
             request.env["oauth.identity"] = access_token.identity
+            request.env["oauth.client_id"] = access_token.client_id.to_s
             access_token.access!
             logger.info "RO2S: Authorized #{access_token.identity}" if logger
           rescue OAuthError=>error
