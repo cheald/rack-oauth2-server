@@ -10,7 +10,6 @@ module Rack
         config.oauth = Server.options
 
         initializer "rack-oauth2-server" do |app|
-          app.middleware.use ::Rack::OAuth2::Server, app.config.oauth
           config.oauth.logger ||= ::Rails.logger
           class ::ActionController::Base
             helper ::Rack::OAuth2::Rails::Helpers

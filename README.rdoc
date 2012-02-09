@@ -30,19 +30,24 @@ support a different database engine, send us a pull request.
 
 === Step 2: Use The Server
 
-For Rails 2.3/3.0, Rack::OAuth2::Server automatically adds itself as middleware
-when required, but you do need to configure it from within
-+config/environment.rb+ (or one of the specific environment files). For example:
+For Rails 2.x, include the middleware as per usual from within +config/environment.rb+
+(or one of the specific environment files). Configuration is done on the Server.options struct.
+For example:
 
   Rails::Initializer.run do |config|
     . . .
-    config.after_initialize do
-      config.oauth.database = Mongo::Connection.new["my_db"]
-      config.oauth.authenticator = lambda do |username, password|
+
+    config.middleware.use(::Rack::OAuth2::Server, ::Rack::OAuth2::Server.options.tap {|opt|
+      opt.logger = Rails.logger
+      opt.database = Mongo::Connection.new["my_db"]
+      opt.expires_in = 3600
+      opt.param_authentication = true
+      opt.authenticator = authenticator = lambda do |username, password|
         user = User.find(username)
         user.id if user && user.authenticated?(password)
       end
-    end
+    })
+
   end
 
 For Sinatra and Padrino, first require +rack/oauth2/sinatra+ and register
